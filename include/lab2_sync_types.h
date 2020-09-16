@@ -15,6 +15,7 @@
 #define _LAB2_HEADER_H
 
 #include <pthread.h>
+#include <semaphore.h>
 
 #define LAB2_SUCCESS                0
 #define LAB2_ERROR                 -1
