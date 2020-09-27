@@ -172,6 +172,35 @@ void bst_test(int num_threads,int node_count){
     // buf[0] = '\0';
     lab2_tree_delete(tree);
 
+
+    /* 
+     * multi therad insert test fine-grained 
+     */
+    is_sync = LAB2_TYPE_FINEGRAINED;
+    tree = lab2_tree_create();
+
+    gettimeofday(&tv_insert_start, NULL);
+    for(i=0; i < num_threads ; i++){
+        thread_arg *th_arg = &threads[i];
+        th_arg->tree = tree;
+        th_arg->is_sync = is_sync;
+        th_arg->data_set = data;
+        th_arg->start = i*term;
+        th_arg->end = (i+1)*term;
+
+        pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+    }
+
+    for (i = 0; i < num_threads; i++)
+        pthread_join(threads[i].thread, NULL);
+
+    gettimeofday(&tv_insert_end, NULL);
+    exe_time = get_timeval(&tv_insert_start, &tv_insert_end);
+    print_result(tree,num_threads, node_count, is_sync,LAB2_OPTYPE_INSERT ,exe_time);
+    // sprintf(buf, "%d,%d,%d,%lf, \n",is_sync, num_threads, node_count, exe_time );
+    // write(fd_insert, buf, strlen(buf));
+    // buf[0] = '\0';
+    lab2_tree_delete(tree);
     //Tree created
 
     
