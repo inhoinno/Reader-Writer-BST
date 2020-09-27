@@ -147,6 +147,7 @@ lab2_tree *lab2_tree_create()
     tree->rw  = (rwlock_t *)malloc(sizeof(rwlock_t));
     tree->root = NULL;
     rwlock_init(tree->rw);
+    Sem_init(tree->lock,1);
     return tree;
 }
 
@@ -292,7 +293,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node)
 
     int cond = 1; // volatile?
     int pKey;
-    pthread_mutex_lock(&mutex_Tree);
+    Sem_wait(tree->cglock);
     /* critical section START*/
 
     if (tree->root != NULL)
@@ -308,7 +309,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node)
             pre = tree->root;
         }else{
             tree->root = new_node;
-            pthread_mutex_unlock(&mutex_Tree);        
+            Sem_post(tree->cglock);        
             return LAB2_SUCCESS;
         }
     }
@@ -328,7 +329,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node)
 
     /* critical section END*/
     /* Release lock  */
-    pthread_mutex_unlock(&mutex_Tree);
+    Sem_post(tree->cglock);
 
     return LAB2_SUCCESS;
 }
@@ -695,7 +696,7 @@ int lab2_node_remove_cg(lab2_tree *tree, int key)
     lab2_node *child =NULL;
     int state = 0; //FALSE
     int cond = 0;
-    pthread_mutex_lock(&(mutex_Tree));
+    Sem_wait(tree->cglock);
     while (leaf != NULL)
     {
         premove = remove;
@@ -774,7 +775,7 @@ int lab2_node_remove_cg(lab2_tree *tree, int key)
         else //Cant find value
             state = 0;      
     }                        //"No such Key"
-    pthread_mutex_unlock(&(mutex_Tree));
+    Sem_post(tree->cglock);
     return (state) ? LAB2_SUCCESS : LAB2_ERROR; //error : No such Key
 }
 

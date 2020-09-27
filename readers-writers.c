@@ -86,8 +86,9 @@ lab2_node* _searcher_parent_node(lab2_node *node , int value){
 }
 
 
-int Writer_insert_cg(lab2_tree *tree, int val){
+int Writer_insert_cg(lab2_tree *tree, lab2_node * node){
     //lock
+    int val = node->value;
     rwlock_acquire_writelock(tree->rw);
     
     /*Critical Section*/
