@@ -128,7 +128,7 @@ int Writer_insert_cg(lab2_tree *tree, int val){
     return ret;
 }
 
-int _Writer_delete_cg(lab2_tree *tree, int val){
+int Writer_delete_cg(lab2_tree *tree, int val){
     //lock
     rwlock_acquire_writelock(tree->rw);
     /*Critical Section*/
