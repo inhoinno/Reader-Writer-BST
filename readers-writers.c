@@ -20,6 +20,7 @@ int Reader(lab2_tree *tree, int val, rwlock_t *rw){
     if(tree->root != NULL){
         node = tree->root;
         ret= searcher(node , val);
+    }
     /*Critical Section END*/
     rwlock_release_readlock(rw);
     return ret;
