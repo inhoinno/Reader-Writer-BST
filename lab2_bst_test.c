@@ -302,10 +302,10 @@ void bst_test(int num_threads,int node_count){
      */
     is_sync = LAB2_TYPE_COARSEGRAINED;
     tree = lab2_tree_create();
-    int reader_stride = per_read;
-    int reader_stride = per_write;
-    int reader_pass = 0; //Integer overflow?
-    int writer_pass = 0;
+    // int reader_stride = per_read;
+    // int reader_stride = per_write;
+    // int reader_pass = 0; //Integer overflow?
+    // int writer_pass = 0;
     int coin = 0;
 
     gettimeofday(&rw_start, NULL);
