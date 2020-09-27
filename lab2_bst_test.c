@@ -103,6 +103,7 @@ void bst_test(int num_threads,int node_count){
     lab2_tree *tree;
     lab2_node *node;    
     struct timeval tv_insert_start, tv_insert_end, tv_delete_start, tv_delete_end, tv_start, tv_end;
+    struct timeval rw_start, rw_end;
     int errors,i=0,count=0;
     int root_data = 40; 
     int term = node_count / num_threads, is_sync;
@@ -294,6 +295,89 @@ void bst_test(int num_threads,int node_count){
     // write(fd_remove, buf, strlen(buf));
     // buf[0] = '\0';
     lab2_tree_delete(tree);
+
+
+    /* 
+     * multi thread insert-delete test coarse-grained  
+     */
+    is_sync = LAB2_TYPE_COARSEGRAINED;
+    tree = lab2_tree_create();
+    int reader_stride = per_read;
+    int reader_stride = per_write;
+    int reader_pass = 0; //Integer overflow?
+    int writer_pass = 0;
+    int coin = 0;
+
+    gettimeofday(&rw_start, NULL);
+    for(i=0 ; i < num_threads ; i++){
+        thread_arg *th_arg = &threads[i];
+        th_arg->tree = tree;
+        th_arg->is_sync = is_sync;
+        th_arg->data_set = data;
+        th_arg->start = i*term;
+        th_arg->end = (i+1)*term;
+        //if(reader_stride + reader_pass >= reader_stride + writer_pass){
+            //pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+        //}else{
+            if(coin){
+                coin =0;
+                pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+            }else{
+                coin = 1;
+                pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+            //}
+        //}
+    }
+    for (i = 0; i < num_threads; i++)
+        pthread_join(threads[i].thread, NULL);
+
+    gettimeofday(&rw_end, NULL);
+    exe_time = get_timeval(&rw_start, &rw_end);
+
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    // sprintf(buf, "%d,%d,%d,%lf, \n",is_sync, num_threads, node_count, exe_time );
+    // write(fd_remove, buf, strlen(buf));
+    // buf[0] = '\0';
+    lab2_tree_delete(tree);
+
+    /* 
+     * multi thread insert-delete test rwlock-grained  
+     */
+    is_sync = LAB2_TYPE_FINEGRAINED;
+    tree = lab2_tree_create();
+    gettimeofday(&tv_delete_start, NULL);
+    for(i=0 ; i < num_threads ; i++){
+        thread_arg *th_arg = &threads[i];
+        th_arg->tree = tree;
+        th_arg->is_sync = is_sync;
+        th_arg->data_set = data;
+        th_arg->start = i*term;
+        th_arg->end = (i+1)*term;
+        //if(reader_stride + reader_pass >= reader_stride + writer_pass){
+            //pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+        //}else{
+            if(coin){
+                coin =0;
+                pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+            }else{
+                coin = 1;
+                pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+            //}
+        //}
+    }
+
+    for (i = 0; i < num_threads; i++)
+        pthread_join(threads[i].thread, NULL);
+
+    gettimeofday(&tv_delete_end, NULL);
+    exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
+
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    // sprintf(buf, "%d,%d,%d,%lf, \n",is_sync, num_threads, node_count, exe_time );
+    // write(fd_remove, buf, strlen(buf));
+    // buf[0] = '\0';
+    lab2_tree_delete(tree);
+
 
     printf("\n");
     // close(fd_insert);
