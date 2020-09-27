@@ -63,6 +63,7 @@ typedef struct lab2_node {
 typedef struct lab2_tree {
     struct lab2_node *root;
     rwlock_t *rw;
+    sem_t * cglock;
 } lab2_tree;
 
 /* 
