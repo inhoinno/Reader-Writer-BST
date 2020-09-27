@@ -18,7 +18,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include "lab2_sync_types.h"
+#include "include/lab2_sync_types.h"
 
 #define LEFT 0
 #define RIGHT 1
@@ -27,9 +27,60 @@ pthread_mutex_t mutex_Tree = PTHREAD_MUTEX_INITIALIZER; //for coarse grain
 pthread_mutex_t tree_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t TreeEmpty = PTHREAD_COND_INITIALIZER;
 
-// INSERT 가 생산자고, DELETE가 소비자야
-// 생산 할 때는 Pre -> child 로 이어줘
-// 소비 할 때는 Suc -> child를 떼어서 rm노드와 바꿔
+/*
+No starve Writer Solution
+//Writer-Lock
+turnstile.wait()
+    roomEmpty.wait()
+    //Writer-Wait END
+    
+    
+    #critical section here
+    
+
+    //Writer-Post()
+turnstile.signal()
+roomEmpty.signal()
+//Writer-Post() END
+*/
+
+/*
+No starve Reader Solution
+//Reader-Wait()
+turnstile.wait()
+turnstile.signal()
+
+readSwitch.lock(roomEmpty)
+    //Reader-Wait() END
+    #critical section for readers
+
+//Reader-Post()
+readSwich.unlock(roomEmpty)
+//Reader-Post() END
+*/
+
+
+
+// Object?
+// lab2_Reader(lab2_tree *tree , int ??){
+//     Reader_Wait()
+
+//     /*Critical Section*/
+
+//     Reader_Post
+
+// }
+
+// Object?
+// lab2_Writer(lab2_tree *tree , int ??){
+//     Writer_Wait()
+
+//     /*Critical Section*/
+
+//     Writer_Post()
+
+// }
+
 
 /*
  * TODO
@@ -38,6 +89,10 @@ pthread_cond_t TreeEmpty = PTHREAD_COND_INITIALIZER;
  *  @param lab2_tree *tree  : bst to print in-order. 
  *  @return                 : status (success or fail)
  */
+
+
+
+
 int lab2_node_print_inorder(lab2_tree *tree)
 {
     // You need to implement lab2_node_print_inorder function.

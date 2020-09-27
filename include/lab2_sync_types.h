@@ -15,10 +15,24 @@
 #define _LAB2_HEADER_H
 
 #include <pthread.h>
-#include <semaphore.h>
-
+#include "rwlock.h"
 #define LAB2_SUCCESS                0
 #define LAB2_ERROR                 -1
+
+/*
+
+내가 보고싶은게 뭐지? -> 
+
+Common BST performance(lab2 Coarse grain) vs 'RW BST'(Coarse grain) performance 
+
+RW - BST 중에서는
+    Common RW BST vs RW-writer-priority BST performance  
+    Optimal BST vs Optimal RW BST
+
+어떤 그림을 예상하고 있지? -> 두 기법의 동일 워크로드 (YCSB, levelDB Benchmark)등에서 성능 측정
+동일 시간동안 Reader 의 Throughput
+
+*/
 
 /*
  * lab2_node
@@ -32,12 +46,13 @@ typedef struct lab2_node {
     pthread_mutex_t mutex;    
     //pthread_mutex_t mutex_left;
     //pthread_mutex_t mutex_right;
+
     struct lab2_node *left;
     struct lab2_node *right;
-    //struct lab2_node *parent;
-    int key;
-
-
+    struct lab2_node *parent;
+    volatile int key;
+    volatile int value;
+    volatile int level;
 } lab2_node;
 
 /*
@@ -53,6 +68,7 @@ typedef struct lab2_tree {
  * lab2_bst_test.c related structure.  
  */
 typedef struct thread_arg{
+
     pthread_t thread;
     lab2_tree *tree;
     int node_count;
@@ -61,7 +77,16 @@ typedef struct thread_arg{
     int *data_set;
     int start;
     int end;
+
 }thread_arg;
+
+
+/*
+ * 
+ * LOCK : if we try to init lock by tree-level-scope , 
+ * then we need may need RW_lockList
+ *  
+*/
 
 /* 
  * lab2_bst.c related functions 
@@ -82,6 +107,15 @@ void lab2_tree_delete(lab2_tree *tree);
 void lab2_node_delete(lab2_node *node);
 int lab2_node_init_inorder(lab2_tree *tree);
 int lab2_node_init(lab2_node *node);
+
+int Reader(lab2_tree *tree, int val, rwlock_t *rw);
+int searcher(lab2_node *node , int value);
+lab2_node* _searcher_node(lab2_node *node , int value);
+lab2_node* _searcher_parent_node(lab2_node *node , int value);
+int Writer_insert_cg(lab2_tree *tree, int val, rwlock_t *rw);
+int Writer_delete_cg(lab2_tree *tree, int val, rwlock_t *rw);
+
+
 
 
 /*
