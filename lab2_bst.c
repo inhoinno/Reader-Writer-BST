@@ -147,7 +147,7 @@ lab2_tree *lab2_tree_create()
     tree->rw  = (rwlock_t *)malloc(sizeof(rwlock_t));
     tree->root = NULL;
     rwlock_init(tree->rw);
-    Sem_init(tree->cglock ,1);
+    Sem_init(&(tree->cglock),1);
     return tree;
 }
 
