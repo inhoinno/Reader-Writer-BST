@@ -20,7 +20,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-
+#include "include/rwlock.h"
 #include "include/lab2_sync_types.h"
 
 #define LAB2_TYPE_FINEGRAINED       0
