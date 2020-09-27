@@ -9,6 +9,8 @@
 #include "include/rwlock.h"
 
 #define ERR_NO_SUCH_KEY -1
+
+
 int Reader(lab2_tree *tree, int val, rwlock_t *rw){
     //lock
     rwlock_acquire_readlock(rw);
@@ -81,9 +83,11 @@ lab2_node* _searcher_parent_node(lab2_node *node , int value){
     }
     return NULL; //ERR_NO_SUCH_KEY ;
 }
-int Writer_insert_cg(lab2_tree *tree, int val, rwlock_t *rw){
+
+
+int Writer_insert_cg(lab2_tree *tree, int val){
     //lock
-    rwlock_acquire_writelock(rw);
+    rwlock_acquire_writelock(tree->rw);
     
     /*Critical Section*/
     int ret = 1;
@@ -119,12 +123,13 @@ int Writer_insert_cg(lab2_tree *tree, int val, rwlock_t *rw){
         }     
     }
     /*Critical Section END*/
-    rwlock_release_writelock(rw);
+    rwlock_release_writelock(tree->rw);
     return ret;
 }
-int Writer_delete_cg(lab2_tree *tree, int val, rwlock_t *rw){
+
+int _Writer_delete_cg(lab2_tree *tree, int val){
     //lock
-    rwlock_acquire_writelock(rw);
+    rwlock_acquire_writelock(tree->rw);
     /*Critical Section*/
     int ret ;
     int cond = 1;
@@ -217,7 +222,7 @@ int Writer_delete_cg(lab2_tree *tree, int val, rwlock_t *rw){
         }
     }
     /*Critical Section END*/
-    rwlock_release_writelock(rw);
+    rwlock_release_writelock(tree->rw);
     return ret;
 }
 // reader_critical()

@@ -62,6 +62,7 @@ typedef struct lab2_node {
  */
 typedef struct lab2_tree {
     struct lab2_node *root;
+    rwlock_t *rw;
 } lab2_tree;
 
 /* 
@@ -112,8 +113,8 @@ int Reader(lab2_tree *tree, int val, rwlock_t *rw);
 int searcher(lab2_node *node , int value);
 lab2_node* _searcher_node(lab2_node *node , int value);
 lab2_node* _searcher_parent_node(lab2_node *node , int value);
-int Writer_insert_cg(lab2_tree *tree, int val, rwlock_t *rw);
-int Writer_delete_cg(lab2_tree *tree, int val, rwlock_t *rw);
+int Writer_insert_cg(lab2_tree *tree, int val);
+int Writer_delete_cg(lab2_tree *tree, int val);
 
 
 

@@ -144,7 +144,9 @@ lab2_tree *lab2_tree_create()
 {
     // You need to implement lab2_tree_create function.
     lab2_tree *tree = (lab2_tree *)malloc(sizeof(lab2_tree));
+    tree->rw  = (rwlock_t *)malloc(sizeof(rwlock_t));
     tree->root = NULL;
+    rwlock_init(tree->rw);
     return tree;
 }
 
