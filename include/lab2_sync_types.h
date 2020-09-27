@@ -114,7 +114,7 @@ int Reader(lab2_tree *tree, int val, rwlock_t *rw);
 int searcher(lab2_node *node , int value);
 lab2_node* _searcher_node(lab2_node *node , int value);
 lab2_node* _searcher_parent_node(lab2_node *node , int value);
-int Writer_insert_cg(lab2_tree *tree, int val);
+int Writer_insert_cg(lab2_tree *tree, lab2_node * node);
 int Writer_delete_cg(lab2_tree *tree, int val);
 
 
