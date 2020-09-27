@@ -325,7 +325,7 @@ void bst_test(int num_threads,int node_count){
             }else{
                 coin = 1;
                 pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
-            //}
+            }
         //}
     }
     for (i = 0; i < num_threads; i++)
@@ -362,7 +362,7 @@ void bst_test(int num_threads,int node_count){
             }else{
                 coin = 1;
                 pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
-            //}
+            }
         //}
     }
 
