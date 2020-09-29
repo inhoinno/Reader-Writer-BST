@@ -111,14 +111,14 @@ void bst_test(int num_threads,int node_count){
     thread_arg *threads;
     int *data = (int*)malloc(sizeof(int)*node_count);
     //open two file 1. Insert.csv
-    // char * buf = (char *)malloc(sizeof(char )* 64);
-    // int fd_insert = open("./insert.csv", O_WRONLY|O_APPEND);
-    // if(fd_insert <0) fd_insert = open("./insert.csv", O_CREAT|O_RDWR , 0664);
-    //     if(fd_insert<0) write(STDERR_FILENO, "Insert.csv Error\n\0", 24);
+    char * buf = (char *)malloc(sizeof(char )*100 );
+    int fd_cg = open("./cgonly.csv", O_WRONLY|O_APPEND);
+    if(fd_cg <0) fd_cg = open("./CGonly.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
+    if(fd_cg<0) write(STDERR_FILENO, "cg.csv Error\n\0", 24);
     // //2. Delete.scv
-    // int fd_remove = open("./remove.csv", O_WRONLY|O_APPEND);
-    // if(fd_remove <0) fd_remove = open("./remove.csv", O_CREAT|O_RDWR , 0664);
-    // if(fd_remove <0) write(STDERR_FILENO, "delete.csv Error\n\0", 24);
+    int fd_rwcg = open("./rwcg.csv", O_WRONLY|O_APPEND);
+    if(fd_rwcg <0) fd_rwcg = open("./rwcg.csv", O_CREAT|O_RDWR , 0664);
+    if(fd_rwcg <0) write(STDERR_FILENO, "rwcg.csv Error\n\0", 24);
 
     srand(time(NULL));
     for (i=0; i < node_count; i++) { 
@@ -301,13 +301,11 @@ void bst_test(int num_threads,int node_count){
      * multi thread insert-delete test coarse-grained  
      */
     is_sync = LAB2_TYPE_COARSEGRAINED;
-    tree = lab2_tree_create();
-    // int reader_stride = per_read;
-    // int reader_stride = per_write;
-    // int reader_pass = 0; //Integer overflow?
-    // int writer_pass = 0;
     int coin = 0;
-
+    int k =0;
+    double total_exe_time = 0;
+    for(k=0; k<10; k++){
+    tree = lab2_tree_create();
     gettimeofday(&rw_start, NULL);
     for(i=0 ; i < num_threads ; i++){
         thread_arg *th_arg = &threads[i];
@@ -333,17 +331,21 @@ void bst_test(int num_threads,int node_count){
 
     gettimeofday(&rw_end, NULL);
     exe_time = get_timeval(&rw_start, &rw_end);
-
-    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    // sprintf(buf, "%d,%d,%d,%lf, \n",is_sync, num_threads, node_count, exe_time );
-    // write(fd_remove, buf, strlen(buf));
-    // buf[0] = '\0';
+    total_exe_time += exe_time;
     lab2_tree_delete(tree);
+    }
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_cg, buf, strlen(buf));
+    close(fd_cg); total_exe_time = 0;
+    buf[0] = '\0';
 
     /* 
      * multi thread insert-delete test rwlock-grained  
      */
     is_sync = LAB2_TYPE_FINEGRAINED;
+
+    for(int k =0 ; k< 10; k++){
     tree = lab2_tree_create();
     gettimeofday(&tv_delete_start, NULL);
     for(i=0 ; i < num_threads ; i++){
@@ -371,13 +373,14 @@ void bst_test(int num_threads,int node_count){
 
     gettimeofday(&tv_delete_end, NULL);
     exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
-
-    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    // sprintf(buf, "%d,%d,%d,%lf, \n",is_sync, num_threads, node_count, exe_time );
-    // write(fd_remove, buf, strlen(buf));
-    // buf[0] = '\0';
+    total_exe_time += exe_time;
     lab2_tree_delete(tree);
-
+    }
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_rwcg, buf, strlen(buf));
+    buf[0] = '\0'; total_exe_time=0;
+    close(fd_rwcg);
 
     printf("\n");
     // close(fd_insert);
