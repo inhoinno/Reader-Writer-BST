@@ -304,9 +304,15 @@ void bst_test(int num_threads,int node_count){
     int coin = 0;
     int k =0;
     double total_exe_time = 0;
-    for(k=0; k<10; k++){
+    for(k=0; k<25; k++){
     tree = lab2_tree_create();
-    gettimeofday(&rw_start, NULL);
+	for (i=0; i < node_count/10; i++) { 
+       		node = lab2_node_create((data[i]+(rand()/100)));
+        	lab2_node_insert_cg(tree,node);
+   	 }	            
+ 
+    
+	gettimeofday(&rw_start, NULL);
     for(i=0 ; i < num_threads ; i++){
         thread_arg *th_arg = &threads[i];
         th_arg->tree = tree;
@@ -345,9 +351,13 @@ void bst_test(int num_threads,int node_count){
      */
     is_sync = LAB2_TYPE_FINEGRAINED;
 
-    for(int k =0 ; k< 10; k++){
+    for(int k =0 ; k< 25; k++){
     tree = lab2_tree_create();
-    gettimeofday(&tv_delete_start, NULL);
+    	for (i=0; i < node_count/10; i++) { 
+       		node = lab2_node_create((data[i]+(rand()/100)));
+        	lab2_node_insert_cg(tree,node);
+   	 }	            
+ 	gettimeofday(&tv_delete_start, NULL);
     for(i=0 ; i < num_threads ; i++){
         thread_arg *th_arg = &threads[i];
         th_arg->tree = tree;
@@ -381,6 +391,149 @@ void bst_test(int num_threads,int node_count){
     write(fd_rwcg, buf, strlen(buf));
     buf[0] = '\0'; total_exe_time=0;
     close(fd_rwcg);
+	
+	/* 
+     * multi thread insert-delete test coarse-grained  
+     */
+    is_sync = LAB2_TYPE_COARSEGRAINED;
+	/*
+	making a stride schedule to Reader-Writer
+	*/    
+	//TODO 1 : make RW_Stride DataStructure that schedule reader-wrtier in stride scheduling
+	//TODO 1-1 : make 'rwstride * create_stride();
+	//rwstride * rw_stride = create_stride();
+	//TODO 1-2 : make 'rwstride * init_stride(rwstride * , int p_reader, int p_writer)'
+	//init_stride(rw_stride, p_reader,p_writer); 
+
+	//TODO 3 : make argv[] to get p_reader, p_writer
+	int p_reader = 20 ; // atoi(argv[?])
+	int p_writer = 80 ; // atoi(argv[?])
+	int reader_pass = 0;
+	int writer_pass = 0;
+	int reader_stride = 0;
+	int writer_stride = 0;
+	cal_readerwriter_stride(&reader_stride , &writer_stride, p_reader, p_writer);
+
+	/*testing for 25 times*/
+    for(int k =0 ; k< 25; k++){
+
+    tree = lab2_tree_create();
+	//init_stride_pass(rw_stride);
+	writer_pass = 0; 
+	reader_pass = 0;	            
+ 	gettimeofday(&tv_delete_start, NULL);
+
+	for(i=0 ; i < num_threads ; i++){
+        thread_arg *th_arg = &threads[i];
+        th_arg->tree = tree;
+        th_arg->is_sync = is_sync;
+        th_arg->data_set = data;
+        th_arg->start = i*term;
+        th_arg->end = (i+1)*term;
+        if(reader_pass >= writer_pass){
+	//if(1 == rw_stride_schedule(rw_stride))
+		//TODO 1-3 : make 'int rw_stride_schedule(rwstride * rw_stride)' that schedule depend on each pass value, add stride, and return 1 or 0
+		//COND : rw_stride_schedule(rw_stride) , RET = 1 to reader : 0 to writer
+		//rw_stride_schdule()은 비교 후 선택된 쓰레드의 pass update, 수행 계획 return 
+		//we increase reader_pass value by reader_stride
+		reader_pass += reader_stride;
+            	//TODO 2 : make '* thread_job_search()' for reader theard
+		pthread_create(&threads[i].thread,NULL,thread_job_search,(void*)th_arg);
+        }else{
+		//wer increase writer_pass value by writer_stride
+		writer_pass += writer_stride;//if struct has made , then we dont need this sentence
+            if(coin){
+                coin =0;
+                pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+            }else{
+                coin = 1;
+                pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+            }
+        }
+    }
+
+    for (i = 0; i < num_threads; i++)
+        pthread_join(threads[i].thread, NULL);
+
+    gettimeofday(&tv_delete_end, NULL);
+    exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
+    total_exe_time += exe_time;
+    lab2_tree_delete(tree);
+    }
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_rwcg, buf, strlen(buf));
+    buf[0] = '\0'; total_exe_time=0;
+
+	/* 
+     * multi thread insert-delete test rwlock-grained  
+     */
+    is_sync = LAB2_TYPE_FINEGRAINED;
+	/*
+	making a stride schedule to Reader-Writer
+	*/    
+	//TODO 1 : make RW_Stride DataStructure that schedule reader-wrtier in stride scheduling
+	//struct * rw_stride = create_stride();
+	//init_stride(rw_stride, p_reader,p_writer); 
+
+	int p_reader = 20 ; // atoi(argv[?])
+	int p_writer = 80 ; // atoi(argv[?])
+	int reader_pass = 0;
+	int writer_pass = 0;
+	int reader_stride = 0;
+	int writer_stride = 0;
+	cal_readerwriter_stride(&reader_stride , &writer_stride, p_reader, p_writer);
+
+	/*testing for 25 times*/
+    for(int k =0 ; k< 25; k++){
+
+    tree = lab2_tree_create();
+	//init_stride_pass(rw_stride);
+	writer_pass = 0; 
+	reader_pass = 0;	            
+ 	gettimeofday(&tv_delete_start, NULL);
+
+	for(i=0 ; i < num_threads ; i++){
+        thread_arg *th_arg = &threads[i];
+        th_arg->tree = tree;
+        th_arg->is_sync = is_sync;
+        th_arg->data_set = data;
+        th_arg->start = i*term;
+        th_arg->end = (i+1)*term;
+        if(reader_pass >= writer_pass){
+		//COND : rw_stride_schedule(rw_stride) , RET = 1 to reader : 0 to writer
+		//rw_stride_schdule()은 비교 후 선택된 쓰레드의 pass update, 수행 계획 return 
+		//we increase reader_pass value by reader_stride
+		reader_pass += reader_stride;
+            	//TODO 2 : make '* thread_job_search()' for reader theard
+		pthread_create(&threads[i].thread,NULL,thread_job_search,(void*)th_arg);
+        }else{
+		//wer increase writer_pass value by writer_stride
+		writer_pass += writer_stride;
+            if(coin){
+                coin =0;
+                pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+            }else{
+                coin = 1;
+                pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+            }
+        }
+    }
+
+    for (i = 0; i < num_threads; i++)
+        pthread_join(threads[i].thread, NULL);
+
+    gettimeofday(&tv_delete_end, NULL);
+    exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
+    total_exe_time += exe_time;
+    lab2_tree_delete(tree);
+    }
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_rwcg, buf, strlen(buf));
+    buf[0] = '\0'; total_exe_time=0;
+    close(fd_rwcg);
+
 
     printf("\n");
     // close(fd_insert);
