@@ -100,7 +100,7 @@ typedef struct rwstride {
     int writer_stride ;
     int reader_pass ;
     int writer_pass ;
-}rwstride_t
+}rwstride_t;
 
 /* 
  * lab2_bst.c related functions 
