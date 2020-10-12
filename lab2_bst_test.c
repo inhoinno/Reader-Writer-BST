@@ -141,7 +141,7 @@ void bst_test(int num_threads,int node_count){
     if(fd_cg_r <0) write(STDERR_FILENO, "cg_reader.csv Error\n\0", 24);
 
     // 4. RW readers.scv
-    int fd_rwcg_r = open("./rwcg_reader.csv", O_CREAT|O_RDWR , 0664);
+    int fd_rwcg_r = open("./rwcg_reader.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
     if(fd_rwcg_r <0) write(STDERR_FILENO, "rwcg_reader.csv Error\n\0", 24);
 
     srand(time(NULL));
