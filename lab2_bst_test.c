@@ -124,7 +124,8 @@ void bst_test(int num_threads,int node_count){
     double exe_time=0.0;
     thread_arg *threads;
     int *data = (int*)malloc(sizeof(int)*node_count);
-    //open two file 1. Insert.csv
+    //open two file 
+    //1. CG ONLY.csv
     char * buf = (char *)malloc(sizeof(char )*100 );
     int fd_cg = open("./cgonly.csv", O_WRONLY|O_APPEND);
     if(fd_cg <0) fd_cg = open("./CGonly.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
@@ -133,6 +134,15 @@ void bst_test(int num_threads,int node_count){
     int fd_rwcg = open("./rwcg.csv", O_WRONLY|O_APPEND);
     if(fd_rwcg <0) fd_rwcg = open("./rwcg.csv", O_CREAT|O_RDWR , 0664);
     if(fd_rwcg <0) write(STDERR_FILENO, "rwcg.csv Error\n\0", 24);
+
+    //3. CG readers.csv
+    char * buf = (char *)malloc(sizeof(char )*100 );
+    int  fd_cg_r = open("./CGonly_reader.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
+    if(fd_cg_r <0) write(STDERR_FILENO, "cg_reader.csv Error\n\0", 24);
+
+    // 4. RW readers.scv
+    int fd_rwcg_r = open("./rwcg_reader.csv", O_CREAT|O_RDWR , 0664);
+    if(fd_rwcg_r <0) write(STDERR_FILENO, "rwcg_reader.csv Error\n\0", 24);
 
     srand(time(NULL));
     for (i=0; i < node_count; i++) { 
@@ -296,10 +306,10 @@ void bst_test(int num_threads,int node_count){
     }
     printf("[READER-WRITER]\n");
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    //sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
-    //write(fd_cg, buf, strlen(buf));
-    //close(fd_cg);
-    //buf[0] = '\0'; 
+    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_cg_r, buf, strlen(buf));
+    close(fd_cg_r);
+    buf[0] = '\0'; 
     total_exe_time=0;
 
 
@@ -355,16 +365,15 @@ void bst_test(int num_threads,int node_count){
     lab2_tree_delete(tree);
     }
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    //sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
-    //write(fd_rwcg, buf, strlen(buf));
-    //buf[0] = '\0'; 
+    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_rwcg, buf, strlen(buf));
+    buf[0] = '\0'; 
     total_exe_time=0;
-    //close(fd_rwcg);
+    close(fd_rwcg_r);
 
 
     printf("\n");
-    // close(fd_insert);
-    // close(fd_remove);
+    
     free(threads);
     free(data);
 }
