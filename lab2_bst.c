@@ -182,6 +182,13 @@ int lab2_node_search(lab2_tree * tree , int val)
 {
     Sem_wait(tree->cglock);
     /*Critical Section*/
+    int ret ;
+    lab2_node *node =NULL;
+    if(tree->root != NULL){
+        node = tree->root;
+        ret= searcher(node , val);
+    }
+    /*Critical Section END*/
     Sem_post(tree->cglock);
 }
 
