@@ -136,7 +136,7 @@ void bst_test(int num_threads,int node_count){
     if(fd_rwcg <0) write(STDERR_FILENO, "rwcg.csv Error\n\0", 24);
 
     //3. CG readers.csv
-    char * buf = (char *)malloc(sizeof(char )*100 );
+    
     int  fd_cg_r = open("./CGonly_reader.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
     if(fd_cg_r <0) write(STDERR_FILENO, "cg_reader.csv Error\n\0", 24);
 
@@ -373,7 +373,7 @@ void bst_test(int num_threads,int node_count){
 
 
     printf("\n");
-    
+
     free(threads);
     free(data);
 }
