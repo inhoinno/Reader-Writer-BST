@@ -129,6 +129,50 @@ int Writer_insert_cg(lab2_tree *tree, lab2_node * node){
     return ret;
 }
 
+
+int Writer_insert_fg(lab2_tree *tree, lab2_node * node){
+    //lock
+    int val = node->value;
+    rwlock_acquire_writelock(tree->rw);
+    
+    /*Critical Section*/
+    int ret = 1;
+    int cond = 0;
+    lab2_node *p_iter = tree->root;
+    lab2_node *iter = tree->root;
+    //CASE Root is Empty
+    if (tree->root == NULL){        // if root is empty
+        //1. Create Node
+        iter = lab2_node_create(val);
+        //2. tree->root = 
+        tree->root = iter;
+        cond=0;
+    }
+    //CASE normal
+    if(cond != 0){
+        while(iter != NULL ){
+            if(iter->value > val){
+                p_iter = iter;
+                iter = iter->left;
+            }
+            else{ // same or over
+                p_iter = iter;
+                iter = iter->right;
+            }
+        }     
+
+        if(p_iter->value > val ){
+            p_iter->left = lab2_node_create(val);
+        }
+        else{
+            p_iter->right = lab2_node_create(val);
+        }     
+    }
+    /*Critical Section END*/
+    rwlock_release_writelock(tree->rw);
+    return ret;
+}
+
 int Writer_delete_cg(lab2_tree *tree, int val){
     //lock
     rwlock_acquire_writelock(tree->rw);
