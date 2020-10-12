@@ -90,23 +90,21 @@ int Writer_insert_cg(lab2_tree *tree, lab2_node * node){
     //lock
     int val = node->value;
     rwlock_acquire_writelock(tree->rw);
-    
     /*Critical Section*/
     int ret = 1;
-    int cond = 0;
+    int cond = 1;
     lab2_node *p_iter = tree->root;
     lab2_node *iter = tree->root;
     //CASE Root is Empty
     if (tree->root == NULL){        // if root is empty
         //1. Create Node
-        iter = lab2_node_create(val);
         //2. tree->root = 
-        tree->root = iter;
+        tree->root = node;
         cond=0;
     }
     //CASE normal
     if(cond != 0){
-        while(iter != NULL ){
+        while(iter != NULL){
             if(iter->value > val){
                 p_iter = iter;
                 iter = iter->left;
@@ -118,10 +116,10 @@ int Writer_insert_cg(lab2_tree *tree, lab2_node * node){
         }     
 
         if(p_iter->value > val ){
-            p_iter->left = lab2_node_create(val);
+            p_iter->left = node;
         }
         else{
-            p_iter->right = lab2_node_create(val);
+            p_iter->right = node;
         }     
     }
     /*Critical Section END*/
