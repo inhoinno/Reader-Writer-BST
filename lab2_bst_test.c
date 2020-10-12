@@ -367,7 +367,7 @@ void bst_test(int num_threads,int node_count){
      */
     is_sync = LAB2_TYPE_FINEGRAINED;
 
-    for(int k =0 ; k< 25; k++){
+    for(k =0 ; k< 25; k++){
     tree = lab2_tree_create();
     	for (i=0; i < node_count/10; i++) { 
        		node = lab2_node_create((data[i]+(rand()/100)));
@@ -426,7 +426,7 @@ void bst_test(int num_threads,int node_count){
     rw_stride_init_stride(rwstride,p_reader,p_writer);
 
 	/*testing for 25 times*/
-    for(int k =0 ; k< 25; k++){
+    for(k =0 ; k< 25; k++){
 
     tree = lab2_tree_create();
 	
@@ -485,7 +485,7 @@ void bst_test(int num_threads,int node_count){
 	rw_stride_init_stride(rwstride, p_reader, p_writer);
 
 	/*testing for 25 times*/
-    for(int k =0 ; k< 25; k++){
+    for(k =0 ; k< 25; k++){
 
     tree = lab2_tree_create();
 	//init_stride_pass(rw_stride);     
