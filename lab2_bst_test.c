@@ -466,7 +466,8 @@ void bst_test(int num_threads,int node_count){
     }
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
     sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
-    write(fd_rwcg, buf, strlen(buf));
+    write(fd_cg, buf, strlen(buf));
+    close(fd_cg);
     buf[0] = '\0'; total_exe_time=0;
 
 
