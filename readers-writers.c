@@ -11,9 +11,9 @@
 #define ERR_NO_SUCH_KEY -1
 
 
-int Reader(lab2_tree *tree, int val, rwlock_t *rw){
+int Reader(lab2_tree *tree, int val){
     //lock
-    rwlock_acquire_readlock(rw);
+    rwlock_acquire_readlock(tree->rw);
     /*Critical Section*/
     int ret ;
     lab2_node *node =NULL;
@@ -22,7 +22,7 @@ int Reader(lab2_tree *tree, int val, rwlock_t *rw){
         ret= searcher(node , val);
     }
     /*Critical Section END*/
-    rwlock_release_readlock(rw);
+    rwlock_release_readlock(tree->rw);
     return ret;
 }
 

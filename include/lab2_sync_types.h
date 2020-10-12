@@ -124,7 +124,7 @@ void lab2_node_delete(lab2_node *node);
 int lab2_node_init_inorder(lab2_tree *tree);
 int lab2_node_init(lab2_node *node);
 
-int Reader(lab2_tree *tree, int val, rwlock_t *rw);
+int Reader(lab2_tree *tree, int val);
 int searcher(lab2_node *node , int value);
 lab2_node* _searcher_node(lab2_node *node , int value);
 lab2_node* _searcher_parent_node(lab2_node *node , int value);

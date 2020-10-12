@@ -74,7 +74,7 @@ void* thread_job_search(void *arg){
         if(is_sync == LAB2_TYPE_FINEGRAINED)
             Reader(tree, data_set[i]);        
         else if(is_sync == LAB2_TYPE_COARSEGRAINED)
-            lab2_node_search_cg(tree, data_set[i]);
+            lab2_node_search(tree, data_set[i]);
     }
 
 }

@@ -1,6 +1,7 @@
 #include "include/lab2_sync_types.h"
-
-
+#include <stdlib.h>
+#include <malloc.h>
+#include <stdio.h>
 /*
 TODO 
     Implement a fuction that creates rwstride object
