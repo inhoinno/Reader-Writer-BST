@@ -90,6 +90,18 @@ typedef struct thread_arg{
  *  
 */
 
+/**
+ * 
+ * Stride : a ratio to fork reader or writer thread to work
+ * 
+*/
+typedef struct rwstride {
+    int reader_stride ;
+    int writer_stride ;
+    int reader_pass ;
+    int writer_pass ;
+}rwstride_t
+
 /* 
  * lab2_bst.c related functions 
  * TODO
@@ -99,6 +111,8 @@ int lab2_node_print_inorder(lab2_tree *tree);
 int lab2_node_print(lab2_node * node);
 lab2_tree *lab2_tree_create();
 lab2_node *lab2_node_create(int key);
+
+int lab2_node_search(lab2_tree * tree , int val);
 int lab2_node_insert(lab2_tree *tree, lab2_node *new_node);
 int lab2_node_insert_fg(lab2_tree *tree, lab2_node *new_node);
 int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node);
@@ -117,8 +131,16 @@ lab2_node* _searcher_parent_node(lab2_node *node , int value);
 int Writer_insert_cg(lab2_tree *tree, lab2_node * node);
 int Writer_delete_cg(lab2_tree *tree, int val);
 
-
-
+/**
+ * 
+ * rwstride_t operations 
+ * 
+*/
+rwstride_t * rw_stride_create_stride();
+int rw_stride_init_stride(rwstride_t * , int , int );
+int rw_stride_schedule(rwstride_t *);
+int rw_stride_reset(rwstride_t *);
+int rw_stride_destroy(rwstride_t *);
 
 /*
  * Lab2 bonus(lab2_bonus.c)

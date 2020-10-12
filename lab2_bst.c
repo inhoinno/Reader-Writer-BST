@@ -170,6 +170,20 @@ lab2_node *lab2_node_create(int key)
     baby->right = NULL;
     return baby;
 }
+/* 
+ * TODO
+ *  Implement a function which search nodes from the BST. 
+ *  
+ *  @param lab2_tree *tree      : bst which you need to search.
+ *  @param lab2_node *new_node  : bst node which you need to find. 
+ *  @return                 : satus (success or fail)
+ */
+int lab2_node_search(lab2_tree * tree , int val)
+{
+    Sem_wait(tree->cglock);
+    /*Critical Section*/
+    Sem_post(tree->cglock);
+}
 
 /* 
  * TODO
