@@ -329,40 +329,41 @@ void bst_test(int num_threads,int node_count){
 	/*testing for 25 times*/
     for(k =0 ; k< 25; k++){
 
-    tree = lab2_tree_create();
-	//init_stride_pass(rw_stride);     
- 	gettimeofday(&tv_delete_start, NULL);
+        tree = lab2_tree_create();
+        gettimeofday(&tv_delete_start, NULL);
+        //Tic
 
-	for(i=0 ; i < num_threads ; i++){
-        thread_arg *th_arg = &threads[i];
-        th_arg->tree = tree;
-        th_arg->is_sync = is_sync;
-        th_arg->data_set = data;
-        th_arg->start = i*term;
-        th_arg->end = (i+1)*term;
-         if(rw_stride_schedule(rwstride))
-        {
-            //COND : rw_stride_schedule(rw_stride) , RET = 1 to reader : 0 to writer
-            pthread_create(&threads[i].thread,NULL,thread_job_search,(void*)th_arg);
-        }else{
-            
-            if(coin){
-                coin =0;
-                pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+        for(i=0 ; i < num_threads ; i++){
+            thread_arg *th_arg = &threads[i];
+            th_arg->tree = tree;
+            th_arg->is_sync = is_sync;
+            th_arg->data_set = data;
+            th_arg->start = i*term;
+            th_arg->end = (i+1)*term;
+            if(rw_stride_schedule(rwstride))
+            {
+                //COND : rw_stride_schedule(rw_stride) , RET = 1 to reader : 0 to writer
+                pthread_create(&threads[i].thread,NULL,thread_job_search,(void*)th_arg);
             }else{
-                coin = 1;
-                pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+                
+                if(coin){
+                    coin =0;
+                    pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+                }else{
+                    coin = 1;
+                    pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+                }
             }
         }
-    }
 
-    for (i = 0; i < num_threads; i++)
-        pthread_join(threads[i].thread, NULL);
+        for (i = 0; i < num_threads; i++)
+            pthread_join(threads[i].thread, NULL);
 
-    gettimeofday(&tv_delete_end, NULL);
-    exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
-    total_exe_time += exe_time;
-    lab2_tree_delete(tree);
+        gettimeofday(&tv_delete_end, NULL);
+        //Toc
+        exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
+        total_exe_time += exe_time;
+        lab2_tree_delete(tree);
     }
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
     sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
