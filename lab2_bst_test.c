@@ -260,8 +260,8 @@ void bst_test(int num_threads,int node_count){
 	making a stride schedule to Reader-Writer
 	*/    
 	//TODO 3 : make argv[] to get p_reader, p_writer
-    int p_reader = 20 ; // atoi(argv[?])
-	int p_writer = 80 ; // atoi(argv[?])
+    int p_reader = 20 ; // atoi(argv[?])	//reader_stride = 100 / 80 = 1
+	int p_writer = 80 ; // atoi(argv[?])	//writer_stride = 100 / 20 = 5
     rwstride_t * rwstride = rw_stride_create_stride();
     rw_stride_init_stride(rwstride,p_reader,p_writer);
 
