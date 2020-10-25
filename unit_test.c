@@ -13,7 +13,7 @@
 #include "include/rwlock.h"
 #include "include/lab2_sync_types.h"
 
-void unit_test(){
+void unit_test(int count){
     int i= 0;
     int counter = 0;
     sem_t CG;
@@ -25,7 +25,7 @@ void unit_test(){
     double execution_time = 0.0; 
     
     gettimeofday(&tv_delete_start, NULL);
-    for(i = 0; i < 10000; i++){
+    for(i = 0; i < count; i++){
         Sem_wait(&CG);
         counter++;
         Sem_post(&CG);
@@ -37,7 +37,7 @@ void unit_test(){
     printf("======= Total Counter : %d ========\n", counter);
     counter = 0;
     gettimeofday(&tv_delete_start, NULL);
-    for(i = 0; i < 10000; i++){
+    for(i = 0; i <count; i++){
         rwlock_acquire_writelock(&RW);
         counter++;
         rwlock_release_writelock(&RW);
@@ -49,7 +49,7 @@ void unit_test(){
     counter = 0;
 
     gettimeofday(&tv_delete_start, NULL);
-    for(i = 0; i < 10000; i++){
+    for(i = 0; i < count; i++){
         rwlock_acquire_readlock(&RW);
         counter++;
         rwlock_release_readlock(&RW);
@@ -72,11 +72,8 @@ int main(int argc, char* argv[]){
 
     optind = 0;
 
-    while ((op = getopt(argc, argv, "t:c:r:")) != -1) {
+    while ((op = getopt(argc, argv, "c:r:")) != -1) {
         switch (op) {
-            case 't':
-                num_threads=atoi(optarg);
-                break;
             case 'c':
                 node_count = atoi(optarg);
                 break;
@@ -89,7 +86,7 @@ int main(int argc, char* argv[]){
     }
     printf("redir : %s\n",redir);
     if((num_threads>0) && (node_count > 0)){
-        unit_test(num_threads,node_count);
+        unit_test(node_count);
     }
 
     return LAB2_SUCCESS;
