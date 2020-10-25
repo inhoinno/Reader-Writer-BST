@@ -15,7 +15,7 @@ LDFLAGS = -lpthread
 
 OBJS_LAB2 = lab2_bst.o lab2_bst_test.o include/lab2_timeval.o 
 OBJS_RW = readers-writers.o rwstride.o include/rwlock.o 
-OBJS_UTEST = unit_test.o
+OBJS_UTEST = unit_test.o include/rwlock.o include/lab2_timeval.o  readers-writers.o
 
 SRCS = $(OBJS_LAB2:.o=.c) $(OBJS_RW:.o=.c) $(OBJS_UTEST:.o=.c) 
 
@@ -31,7 +31,7 @@ $(TARGET_LAB2) : $(OBJS_LAB2) $(OBJS_RW)
 	$(CC) -o $(TARGET_LAB2) $(OBJS_RW) $(OBJS_LAB2)  $(LDFLAGS)
 
 $(TARGET_UNIT) : $(OBJS_UTEST)
-	$(CC) -o $(TARGET_UNIT) $(OBJS_UTEST) $(OBJS_RW) $(OBJS_LAB2)  $(LDFLAGS)
+	$(CC) -o $(TARGET_UNIT) $(OBJS_UTEST)
 
 	
 all : $(TARGET_LAB2) $(TARGET_UNIT) $(TARGET_BONUS) $(TARGET_EXAMPLE) 
