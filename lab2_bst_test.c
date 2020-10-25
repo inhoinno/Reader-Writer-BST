@@ -125,36 +125,36 @@ void bst_test(int num_threads,int node_count){
     thread_arg *threads;
     int *data = (int*)malloc(sizeof(int)*node_count);
     //open two file 
-    //1. CG ONLY.csv
+    //1. Writer Only Graph 
     char * buf = (char *)malloc(sizeof(char )*100 );
-    int fd_cg = open("./cgonly.csv", O_WRONLY|O_APPEND);
-    if(fd_cg <0) fd_cg = open("./CGonly.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
-    if(fd_cg<0) write(STDERR_FILENO, "cg.csv Error\n\0", 24);
-    // //2. Delete.scv
-    int fd_rwcg = open("./rwcg.csv", O_WRONLY|O_APPEND);
-    if(fd_rwcg <0) fd_rwcg = open("./rwcg.csv", O_CREAT|O_RDWR , 0664);
-    if(fd_rwcg <0) write(STDERR_FILENO, "rwcg.csv Error\n\0", 24);
+    int fd_w = open("./Writer_only_graph0.csv", O_WRONLY|O_APPEND);
+    if(fd_w <0) fd_w = open("./Writer_only_graph0.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
+    if(fd_w <0) write(STDERR_FILENO, "Writer_only_graph0.csv Error\n\0", 24);
+    // // //2. Delete.scv
+    // int fd_rwcg = open("./graph0.csv", O_WRONLY|O_APPEND);
+    // if(fd_rwcg <0) fd_rwcg = open("./graph0.csv", O_CREAT|O_RDWR , 0664);
+    // if(fd_rwcg <0) write(STDERR_FILENO, "rwcg.csv Error\n\0", 24);
 
+
+    //2. Reader-Writer Graph 
     //3. CG readers.csv
     
-    int  fd_cg_r = open("./CGonly_reader.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
-    if(fd_cg_r <0) write(STDERR_FILENO, "cg_reader.csv Error\n\0", 24);
-
+    int fd_r = open("./reader_graph1.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
+    if(fd_r <0) write(STDERR_FILENO, "reader_graph1.csv Error\n\0", 24);
     // 4. RW readers.scv
-    int fd_rwcg_r = open("./rwcg_reader.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
-    if(fd_rwcg_r <0) write(STDERR_FILENO, "rwcg_reader.csv Error\n\0", 24);
+    //int fd_rwcg_r = open("./reader_graph1.csv", O_CREAT|O_RDWR|O_APPEND , 0664);
+    //if(fd_rwcg_r <0) write(STDERR_FILENO, "reader_graph1.csv Error\n\0", 24);
 
     srand(time(NULL));
     for (i=0; i < node_count; i++) { 
         data[i] = rand();
     }
-
     if (!(threads = (thread_arg*)malloc(sizeof(thread_arg) * num_threads)))
         abort();
 
 
 
-    /* [WRITER ONLY - 단일 세마포어]
+    /* [WRITER ONLY - 단일 세마포어로 Writer Only Workload실험]
      * 1. multi thread insert-delete test coarse-grained  
      */
     is_sync = LAB2_TYPE_COARSEGRAINED;
@@ -198,14 +198,16 @@ void bst_test(int num_threads,int node_count){
     lab2_tree_delete(tree);
     }
     printf("[WRITER ONLY]\n");
+    write(fd_w, "[WRITER ONLY]\n", 16);
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
-    write(fd_cg, buf, strlen(buf));
-    close(fd_cg); total_exe_time = 0;
+    sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_w, buf, strlen(buf));
+    close(fd_w); total_exe_time = 0;
     buf[0] = '\0';
 
-    /* [WRITER ONLY - RWlock machanism]
+    /* [WRITER ONLY - RWlock machanism RW락으로 Writer Only Workload]
      * 2. multi thread insert-delete test rwlock-grained  
+     * --> Graph 0 END. 
      */
     is_sync = LAB2_TYPE_FINEGRAINED;
 
@@ -245,10 +247,10 @@ void bst_test(int num_threads,int node_count){
     lab2_tree_delete(tree);
     }
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
-    write(fd_rwcg, buf, strlen(buf));
+    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_w, buf, strlen(buf));
     buf[0] = '\0'; total_exe_time=0;
-    close(fd_rwcg);
+    close(fd_w);
 	
 
 
@@ -260,11 +262,13 @@ void bst_test(int num_threads,int node_count){
 	making a stride schedule to Reader-Writer
 	*/    
 	//TODO 3 : make argv[] to get p_reader, p_writer
-    int p_reader = 20 ; // atoi(argv[?])	//reader_stride = 100 / 80 = 1
-	int p_writer = 80 ; // atoi(argv[?])	//writer_stride = 100 / 20 = 5
+    int p_reader = 25 ; // //reader_stride = 100 / 25 = 4  = 80 %
+	int p_writer = 75 ; // //writer_stride = 100 / 75 = 1  = 20 %
     rwstride_t * rwstride = rw_stride_create_stride();
     rw_stride_init_stride(rwstride,p_reader,p_writer);
-
+    sprintf(buf , "[R%.4lf W%.4lf]\n", 100 * (float)(rwstride->reader_stride + rwstride->writer_stride) / (float)rwstride->reader_stride,(float)(rwstride->reader_stride + rwstride->writer_stride) / (float)rwstride->writer_stride );
+    write(fd_r, buf, strlen(buf));
+    buf[0]= "\0";
 	/*testing for 25 times*/
     for(k =0 ; k< 25; k++){
 
@@ -306,9 +310,9 @@ void bst_test(int num_threads,int node_count){
     }
     printf("[READER-WRITER]\n");
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
-    write(fd_cg_r, buf, strlen(buf));
-    close(fd_cg_r);
+    sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_r, buf, strlen(buf));
+    close(fd_r);
     buf[0] = '\0'; 
     total_exe_time=0;
 
@@ -366,11 +370,123 @@ void bst_test(int num_threads,int node_count){
         lab2_tree_delete(tree);
     }
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "%d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
-    write(fd_rwcg_r, buf, strlen(buf));
+    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_r, buf, strlen(buf));
     buf[0] = '\0'; 
     total_exe_time=0;
-    close(fd_rwcg_r);
+    close(fd_r);
+
+    ///대조군 실험 : read-writer 비율 조정 
+    rw_stride_init_stride(rwstride,p_writer,p_reader); //바꿈
+    sprintf(buf , "[R%.4lf W%.4lf]\n", 100 * (float)(rwstride->reader_stride + rwstride->writer_stride) / (float)rwstride->reader_stride,(float)(rwstride->reader_stride + rwstride->writer_stride) / (float)rwstride->writer_stride );
+    write(fd_r, buf, strlen(buf));
+    buf[0] = '\0';
+	/*testing for 25 times*/
+    for(k =0 ; k< 25; k++){
+
+    tree = lab2_tree_create();
+	
+ 	gettimeofday(&tv_delete_start, NULL);
+
+	for(i=0 ; i < num_threads ; i++){
+        thread_arg *th_arg = &threads[i];
+        th_arg->tree = tree;
+        th_arg->is_sync = is_sync;
+        th_arg->data_set = data;
+        th_arg->start = i*term;
+        th_arg->end = (i+1)*term;
+
+        if(rw_stride_schedule(rwstride))
+        {
+            //COND : rw_stride_schedule(rw_stride) , RET = 1 to reader : 0 to writer
+            pthread_create(&threads[i].thread,NULL,thread_job_search,(void*)th_arg);
+        }else{
+            
+            if(coin){
+                coin =0;
+                pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+            }else{
+                coin = 1;
+                pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+            }
+        }
+    }
+
+    for (i = 0; i < num_threads; i++)
+        pthread_join(threads[i].thread, NULL);
+
+    gettimeofday(&tv_delete_end, NULL);
+    exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
+    total_exe_time += exe_time;
+    lab2_tree_delete(tree);
+    }
+    printf("[READER-WRITER]\n");
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_r, buf, strlen(buf));
+    close(fd_r);
+    buf[0] = '\0'; 
+    total_exe_time=0;
+
+
+	/* 
+     * 4. multi thread reader_writer test rwlock-grained  
+     */
+    is_sync = LAB2_TYPE_FINEGRAINED;
+	/*
+	making a stride schedule to Reader-Writer
+	*/    
+	//TODO 1 : make RW_Stride DataStructure that schedule reader-wrtier in stride scheduling
+	//struct * rw_stride = create_stride();
+	//init_stride(rw_stride, p_reader,p_writer); 
+ 
+	rw_stride_init_stride(rwstride, p_reader, p_writer);
+
+	/*testing for 25 times*/
+    for(k =0 ; k< 25; k++){
+
+        tree = lab2_tree_create();
+        gettimeofday(&tv_delete_start, NULL);
+        //Tic
+
+        for(i=0 ; i < num_threads ; i++){
+            thread_arg *th_arg = &threads[i];
+            th_arg->tree = tree;
+            th_arg->is_sync = is_sync;
+            th_arg->data_set = data;
+            th_arg->start = i*term;
+            th_arg->end = (i+1)*term;
+            if(rw_stride_schedule(rwstride))
+            {
+                //COND : rw_stride_schedule(rw_stride) , RET = 1 to reader : 0 to writer
+                pthread_create(&threads[i].thread,NULL,thread_job_search,(void*)th_arg);
+            }else{
+                
+                if(coin){
+                    coin =0;
+                    pthread_create(&threads[i].thread,NULL,thread_job_insert,(void*)th_arg);
+                }else{
+                    coin = 1;
+                    pthread_create(&threads[i].thread,NULL,thread_job_delete,(void*)th_arg);
+                }
+            }
+        }
+
+        for (i = 0; i < num_threads; i++)
+            pthread_join(threads[i].thread, NULL);
+
+        gettimeofday(&tv_delete_end, NULL);
+        //Toc
+        exe_time = get_timeval(&tv_delete_start, &tv_delete_end);
+        total_exe_time += exe_time;
+        lab2_tree_delete(tree);
+    }
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    write(fd_r, buf, strlen(buf));
+    buf[0] = '\0'; 
+    total_exe_time=0;
+    close(fd_r);
 
 
     printf("\n");

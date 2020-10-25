@@ -315,6 +315,7 @@ int lab2_node_insert_cg(lab2_tree *tree, lab2_node *new_node)
 
     int cond = 1; // volatile?
     int pKey;
+    
     Sem_wait(tree->cglock);
     /* critical section START*/
 
