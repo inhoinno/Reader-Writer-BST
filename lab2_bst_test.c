@@ -268,7 +268,7 @@ void bst_test(int num_threads,int node_count){
     rw_stride_init_stride(rwstride,p_reader,p_writer);
     sprintf(buf , "[R%.4lf W%.4lf]\n", 100 * (float)(rwstride->reader_stride + rwstride->writer_stride) / (float)rwstride->reader_stride,(float)(rwstride->reader_stride + rwstride->writer_stride) / (float)rwstride->writer_stride );
     write(fd_r, buf, strlen(buf));
-    buf[0]= "\0";
+    buf[0]= '\0';
 	/*testing for 25 times*/
     for(k =0 ; k< 25; k++){
 
