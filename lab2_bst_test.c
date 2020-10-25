@@ -202,7 +202,7 @@ void bst_test(int num_threads,int node_count){
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
     sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
     write(fd_w, buf, strlen(buf));
-    close(fd_w); total_exe_time = 0;
+    total_exe_time = 0;
     buf[0] = '\0';
 
     /* [WRITER ONLY - RWlock machanism RW락으로 Writer Only Workload]
@@ -266,7 +266,7 @@ void bst_test(int num_threads,int node_count){
 	int p_writer = 75 ; // //writer_stride = 100 / 75 = 1  = 20 %
     rwstride_t * rwstride = rw_stride_create_stride();
     rw_stride_init_stride(rwstride,p_reader,p_writer);
-    sprintf(buf , "[R%.4lf W%.4lf]\n", 100 * (float)(rwstride->reader_stride + rwstride->writer_stride) / (float)rwstride->reader_stride,(float)(rwstride->reader_stride + rwstride->writer_stride) / (float)rwstride->writer_stride );
+    sprintf(buf , "[R%.4lf W%.4lf]\n", 100 * (float)rwstride->writer_stride /(float)rwstride->reader_stride/(float)(rwstride->reader_stride + rwstride->writer_stride) ,100*(float)(rwstride->reader_stride + rwstride->writer_stride)  );
     write(fd_r, buf, strlen(buf));
     buf[0]= '\0';
 	/*testing for 25 times*/
@@ -312,7 +312,7 @@ void bst_test(int num_threads,int node_count){
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
     sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k)) );
     write(fd_r, buf, strlen(buf));
-    close(fd_r);
+
     buf[0] = '\0'; 
     total_exe_time=0;
 
@@ -374,7 +374,7 @@ void bst_test(int num_threads,int node_count){
     write(fd_r, buf, strlen(buf));
     buf[0] = '\0'; 
     total_exe_time=0;
-    close(fd_r);
+    //close(fd_r);
 
     ///대조군 실험 : read-writer 비율 조정 
     rw_stride_init_stride(rwstride,p_writer,p_reader); //바꿈
@@ -424,7 +424,7 @@ void bst_test(int num_threads,int node_count){
     print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
     sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k)) );
     write(fd_r, buf, strlen(buf));
-    close(fd_r);
+    //close(fd_r);
     buf[0] = '\0'; 
     total_exe_time=0;
 
