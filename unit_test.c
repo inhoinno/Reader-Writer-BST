@@ -33,7 +33,7 @@ void unit_test(int count){
     gettimeofday(&tv_delete_end, NULL);
     execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
 
-    printf("======= Single sem_t Total EXE : %lf ========\n", execution_time/(i));
+    printf("======= Single sem_t Total EXE : %lf ========\n", execution_time);
     printf("======= Total Counter : %d ========\n", counter);
     counter = 0;
     gettimeofday(&tv_delete_start, NULL);
@@ -44,7 +44,7 @@ void unit_test(int count){
     }
     gettimeofday(&tv_delete_end, NULL);
     execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
-    printf("======= RW writer Total EXE : %lf ========\n", execution_time/(i));
+    printf("======= RW writer Total EXE : %lf ========\n", execution_time);
     printf("======= Total Counter : %d ========\n", counter);
     counter = 0;
 
@@ -56,7 +56,7 @@ void unit_test(int count){
     }
     gettimeofday(&tv_delete_end, NULL);
     execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
-    printf("======= RW reader Total EXE : %lf ========\n", execution_time/(i));
+    printf("======= RW reader Total EXE : %lf ========\n", execution_time);
     printf("=======     Total Counter   : %d  ========\n", counter);
     counter = 0;
 }
