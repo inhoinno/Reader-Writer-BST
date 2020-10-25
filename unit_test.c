@@ -90,14 +90,7 @@ int main(int argc, char* argv[]){
     printf("redir : %s\n",redir);
     if((num_threads>0) && (node_count > 0)){
         unit_test(num_threads,node_count);
-    }else{
-        goto INVALID_ARGS;
     }
 
     return LAB2_SUCCESS;
-INVALID_ARGS:
-    lab2_sync_usage(argv[0]);
-    lab2_sync_example(argv[0]);
-
-    return LAB2_ERROR;
 }
