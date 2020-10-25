@@ -61,6 +61,23 @@ void unit_test(int count){
     printf("=======     Total Counter      : %d  ========\n", counter);
     counter = 0;
 
+    Sem_init(&CG, 2);
+
+    gettimeofday(&tv_delete_start, NULL);
+    for(i = 0; i < count; i++){
+        Sem_wait(&CG);
+        Sem_wait(&CG);
+        counter++;
+        Sem_post(&CG);
+        Sem_post(&CG);
+    }
+    gettimeofday(&tv_delete_end, NULL);
+    execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
+
+    printf("======= Single sem_t Total EXE : %lf ========\n", execution_time);
+    printf("=======     Total Counter      : %d  ========\n", counter);
+    counter = 0;
+
 }
 
 int main(int argc, char* argv[]){
