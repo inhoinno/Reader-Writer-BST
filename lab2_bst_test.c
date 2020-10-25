@@ -199,7 +199,7 @@ void bst_test(int num_threads,int node_count){
     }
     printf("[WRITER ONLY]\n");
     write(fd_w, "[WRITER ONLY]\n", 16);
-    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
     sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
     write(fd_w, buf, strlen(buf));
     close(fd_w); total_exe_time = 0;
@@ -246,8 +246,8 @@ void bst_test(int num_threads,int node_count){
     total_exe_time += exe_time;
     lab2_tree_delete(tree);
     }
-    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
+    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k)) );
     write(fd_w, buf, strlen(buf));
     buf[0] = '\0'; total_exe_time=0;
     close(fd_w);
@@ -309,8 +309,8 @@ void bst_test(int num_threads,int node_count){
     lab2_tree_delete(tree);
     }
     printf("[READER-WRITER]\n");
-    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
+    sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k)) );
     write(fd_r, buf, strlen(buf));
     close(fd_r);
     buf[0] = '\0'; 
@@ -369,8 +369,8 @@ void bst_test(int num_threads,int node_count){
         total_exe_time += exe_time;
         lab2_tree_delete(tree);
     }
-    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
+    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k)) );
     write(fd_r, buf, strlen(buf));
     buf[0] = '\0'; 
     total_exe_time=0;
@@ -421,8 +421,8 @@ void bst_test(int num_threads,int node_count){
     lab2_tree_delete(tree);
     }
     printf("[READER-WRITER]\n");
-    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
+    sprintf(buf, "CGLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k)) );
     write(fd_r, buf, strlen(buf));
     close(fd_r);
     buf[0] = '\0'; 
@@ -481,8 +481,8 @@ void bst_test(int num_threads,int node_count){
         total_exe_time += exe_time;
         lab2_tree_delete(tree);
     }
-    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,exe_time);
-    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k-1)) );
+    print_result(tree ,num_threads, node_count, is_sync, LAB2_OPTYPE_DELETE,(total_exe_time/(k)));
+    sprintf(buf, "RWLK %d,%d,%lf, \n", num_threads, node_count, (total_exe_time/(k)) );
     write(fd_r, buf, strlen(buf));
     buf[0] = '\0'; 
     total_exe_time=0;
