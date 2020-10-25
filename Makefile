@@ -31,7 +31,7 @@ $(TARGET_LAB2) : $(OBJS_LAB2) $(OBJS_RW)
 	$(CC) -o $(TARGET_LAB2) $(OBJS_RW) $(OBJS_LAB2)  $(LDFLAGS)
 
 $(TARGET_UNIT) : $(OBJS_UTEST)
-	$(CC) -o $(TARGET_UNIT) $(OBJS_UTEST) $(OBJS_RW) include/lab2_timeval.o $(LDFLAGS) 
+	$(CC) -o $(TARGET_UNIT) $(OBJS_UTEST) $(OBJS_RW) lab2_bst.o include/lab2_timeval.o $(LDFLAGS) 
 
 all : $(TARGET_LAB2) $(TARGET_UNIT) 
 
