@@ -17,8 +17,10 @@ void unit_test(int count){
     int i= 0;
     int counter = 0;
     sem_t CG;
+    sem_t CG2;
     rwlock_t RW;
     Sem_init(&CG, 1);
+    Sem_init(&CG2, 1);
     rwlock_init(&RW);
     struct timeval tv_insert_start, tv_insert_end, tv_delete_start, tv_delete_end, tv_start, tv_end;
     struct timeval rw_start, rw_end;
@@ -70,6 +72,22 @@ void unit_test(int count){
         counter++;
         Sem_post(&CG);
         Sem_post(&CG);
+    }
+    gettimeofday(&tv_delete_end, NULL);
+    execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
+
+    printf("======= Double sem_t Total EXE : %lf ========\n", execution_time);
+    printf("=======     Total Counter      : %d  ========\n", counter);
+    counter = 0;
+
+    Sem_init(&CG, 1);
+    gettimeofday(&tv_delete_start, NULL);
+    for(i = 0; i < count; i++){
+        Sem_wait(&CG);
+        Sem_wait(&CG2);
+        counter++;
+        Sem_post(&CG);
+        Sem_post(&CG2);
     }
     gettimeofday(&tv_delete_end, NULL);
     execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
