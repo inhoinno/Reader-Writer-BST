@@ -74,7 +74,7 @@ void unit_test(int count){
     gettimeofday(&tv_delete_end, NULL);
     execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
 
-    printf("======= Single sem_t Total EXE : %lf ========\n", execution_time);
+    printf("======= Double sem_t Total EXE : %lf ========\n", execution_time);
     printf("=======     Total Counter      : %d  ========\n", counter);
     counter = 0;
 
