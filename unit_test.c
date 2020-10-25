@@ -23,19 +23,7 @@ void unit_test(int count){
     struct timeval tv_insert_start, tv_insert_end, tv_delete_start, tv_delete_end, tv_start, tv_end;
     struct timeval rw_start, rw_end;
     double execution_time = 0.0; 
-    
-    gettimeofday(&tv_delete_start, NULL);
-    for(i = 0; i < count; i++){
-        Sem_wait(&CG);
-        counter++;
-        Sem_post(&CG);
-    }
-    gettimeofday(&tv_delete_end, NULL);
-    execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
 
-    printf("======= Single sem_t Total EXE : %lf ========\n", execution_time);
-    printf("======= Total Counter : %d ========\n", counter);
-    counter = 0;
     gettimeofday(&tv_delete_start, NULL);
     for(i = 0; i <count; i++){
         rwlock_acquire_writelock(&RW);
@@ -45,7 +33,7 @@ void unit_test(int count){
     gettimeofday(&tv_delete_end, NULL);
     execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
     printf("======= RW writer Total EXE : %lf ========\n", execution_time);
-    printf("======= Total Counter : %d ========\n", counter);
+    printf("=======     Total Counter   : %d ========\n", counter);
     counter = 0;
 
     gettimeofday(&tv_delete_start, NULL);
@@ -59,6 +47,20 @@ void unit_test(int count){
     printf("======= RW reader Total EXE : %lf ========\n", execution_time);
     printf("=======     Total Counter   : %d  ========\n", counter);
     counter = 0;
+    
+    gettimeofday(&tv_delete_start, NULL);
+    for(i = 0; i < count; i++){
+        Sem_wait(&CG);
+        counter++;
+        Sem_post(&CG);
+    }
+    gettimeofday(&tv_delete_end, NULL);
+    execution_time = get_timeval(&tv_delete_start, &tv_delete_end);
+
+    printf("======= Single sem_t Total EXE : %lf ========\n", execution_time);
+    printf("=======     Total Counter      : %d  ========\n", counter);
+    counter = 0;
+
 }
 
 int main(int argc, char* argv[]){
