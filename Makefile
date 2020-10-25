@@ -20,7 +20,7 @@ OBJS_UTEST = unit_test.o include/rwlock.o include/lab2_timeval.o  readers-writer
 SRCS = $(OBJS_LAB2:.o=.c) $(OBJS_RW:.o=.c) $(OBJS_UTEST:.o=.c) 
 
 TARGET_LAB2 = lab2_bst 
-TARGET_UNIT = unit_t
+TARGET_UNIT = unit
 .SUFFIXES : .c .o
 
 .c.o:
@@ -33,15 +33,14 @@ $(TARGET_LAB2) : $(OBJS_LAB2) $(OBJS_RW)
 $(TARGET_UNIT) : $(OBJS_UTEST)
 	$(CC) -o $(TARGET_UNIT) $(OBJS_UTEST)
 
-	
-all : $(TARGET_LAB2) $(TARGET_UNIT) $(TARGET_BONUS) $(TARGET_EXAMPLE) 
+all : $(TARGET_LAB2) $(TARGET_UNIT) 
 
 dep : 
 	gccmaedep $(INC) $(SRCS)
 
 clean :
 	@echo "Cleaning lab2 BST synchronization $< ..."
-	rm -rf $(OBJS_LAB2) $(TARGET_LAB2) $(OBJS_RW) 
+	rm -rf $(OBJS_LAB2) $(TARGET_LAB2) $(OBJS_RW) $(TARGET_UNIT) : $(OBJS_UTEST)
 
 new :
 	$(MAKE) clean

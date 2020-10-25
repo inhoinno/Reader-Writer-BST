@@ -84,7 +84,7 @@ int main(int argc, char* argv[]){
                 redir = (char*)optarg;
 
             default:
-                goto INVALID_ARGS;
+                break;
         }
     }
     printf("redir : %s\n",redir);
