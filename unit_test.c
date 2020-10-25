@@ -85,7 +85,7 @@ int main(int argc, char* argv[]){
         }
     }
     printf("redir : %s\n",redir);
-    if((num_threads>0) && (node_count > 0)){
+    if((node_count > 0)){
         unit_test(node_count);
     }
 
